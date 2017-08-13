@@ -1,0 +1,112 @@
+# vim: set sts=2 ts=8 sw=2 tw=99 et ft=python:
+import os, sys
+
+projectName = 'left4downtown'
+
+# smsdk_ext.cpp will be automatically added later
+
+codepatchFiles = [
+    'codepatch/patchmanager.cpp'
+]
+
+detourFiles = [
+    'detours/send_in_rescue_vehicle.cpp',
+    'detours/change_finale_stage.cpp',
+    'detours/get_script_value_string.cpp',
+    'detours/end_versus_mode_round.cpp', 
+    'detours/select_weighted_sequence.cpp',
+    'detours/spawn_special.cpp',
+    'detours/spawn_witchbride.cpp',
+    'detours/on_revived.cpp',
+    'detours/use_healing_items.cpp',
+    'detours/find_scavenge_item.cpp',
+    'detours/water_move.cpp',
+    'detours/on_stagger.cpp',
+    'detours/terror_weapon_hit.cpp',
+    'detours/get_mission_info.cpp',
+	'detours/replace_tank.cpp',
+    'detours/inferno_spread.cpp',
+    'detours/shoved_by_pounce_landing.cpp',
+	'detours/detour.cpp',
+    'detours/spawn_tank.cpp',
+    'detours/spawn_witch.cpp',
+    'detours/clear_team_scores.cpp',
+    'detours/set_campaign_scores.cpp',
+    'detours/first_survivor_left_safe_area.cpp', 
+    'detours/mob_rush_start.cpp', 
+    'detours/spawn_it_mob.cpp', 
+    'detours/spawn_mob.cpp', 
+    'detours/try_offering_tank_bot.cpp',
+    'detours/get_script_value_int.cpp',
+    'detours/get_script_value_float.cpp',
+    'detours/shoved_by_survivor.cpp',
+    'detours/get_crouch_top_speed.cpp',
+    'detours/get_run_top_speed.cpp',
+    'detours/get_walk_top_speed.cpp', 
+    'detours/has_configurable_difficulty.cpp',
+    'detours/get_survivor_set.cpp',
+    'detours/fast_get_survivor_set.cpp',
+	'detours/get_mission_versus_boss_spawning.cpp', 
+    'detours/cthrow_activate_ability.cpp', 
+	'detours/start_melee_swing.cpp',
+]
+
+l4d2sdkFiles = [
+    'l4d2sdk/l4d2calls.cpp',
+    'l4d2sdk/l4d2timers.cpp'
+]
+
+mainFiles = [
+    'directornatives.cpp',
+    'extension.cpp',
+    'meleeweaponnatives.cpp',
+    'natives.cpp',
+    'timernatives.cpp',
+    'util.cpp',
+    'vglobals.cpp',
+    'weaponnatives.cpp',
+	'addons_disabler.cpp',
+	
+	os.path.join(Extension.sm_root, 'public', 'asm', 'asm.c')
+]
+
+playerslot = [
+  'player_slots.cpp',
+  'detours/server_player_counts.cpp',
+]
+
+detour_games = ['l4d', 'l4d2', 'nucleardawn']
+
+###############
+# Make sure to edit PackageScript, which copies your files to their appropriate locations
+# Simple extensions do not need to modify past this point.
+
+project = Extension.HL2Project(builder, projectName + '.ext')
+
+if os.path.isfile(os.path.join(builder.currentSourcePath, 'sdk', 'smsdk_ext.cpp')):
+  # Use the copy included in the project
+  project.sources += [os.path.join('sdk', 'smsdk_ext.cpp')]
+else:
+  # Use the copy included with SM 1.6 and newer
+  project.sources += [os.path.join(Extension.sm_root, 'public', 'smsdk_ext.cpp')]
+
+project.sources += mainFiles
+project.sources += l4d2sdkFiles 
+project.sources += detourFiles
+project.sources += codepatchFiles
+
+if builder.options.plslot == '1':
+  # Add PlayerSlot source files
+  project.sources += playerslot
+
+for sdk_name in Extension.sdks:
+  if sdk_name == 'episode1':
+    continue
+  sdk = Extension.sdks[sdk_name]
+  
+  binary = Extension.HL2Config(project, projectName + '.ext.' + sdk.ext, sdk)
+
+  if builder.target_platform == 'linux' or sdk_name in detour_games:
+    binary.sources += [os.path.join(Extension.sm_root, 'public', 'CDetour', 'detours.cpp')]
+
+Extension.extensions = builder.Add(project)
