@@ -41,7 +41,7 @@
  * 
  * @return 	current tank count
  */
-native L4D2_GetTankCount();
+native int L4D2_GetTankCount();
 
 /**
  * @brief Gets the campaign scores stored in the Versus Director
@@ -50,7 +50,7 @@ native L4D2_GetTankCount();
  * @param scores 		Array to store the campaign scores in
  * @noreturn 				
  */
-native L4D2_GetVersusCampaignScores(scores[2]);
+native void L4D2_GetVersusCampaignScores(int scores[2]);
 
 /**
  * @brief Sets the campaign scores stored in the Versus Director
@@ -59,7 +59,7 @@ native L4D2_GetVersusCampaignScores(scores[2]);
  * @param scores 		Array of campaign scores to set the director's values to.
  * @noreturn 				
  */
-native L4D2_SetVersusCampaignScores(const scores[2]);
+native void L4D2_SetVersusCampaignScores(const int scores[2]);
 
 /**
  * @brief Gets the flow percent for tank spawns for both versus rounds.
@@ -70,7 +70,7 @@ native L4D2_SetVersusCampaignScores(const scores[2]);
  * @param tankFlows	Array to store the Tank Spawn Flow percents in
  * @noreturn 				
  */
-native L4D2_GetVersusTankFlowPercent(Float:tankFlows[2]);
+native void L4D2_GetVersusTankFlowPercent(float tankFlows[2]);
 
 /**
  * @brief Sets the flow percent for tank spawns for both versus rounds.
@@ -81,5 +81,5 @@ native L4D2_GetVersusTankFlowPercent(Float:tankFlows[2]);
  * @param tankFlows	Array of Tank Spawn Flow percents to store in director
  * @noreturn 				
  */
-native L4D2_SetVersusTankFlowPercent(const Float:tankFlows[2]);
+native void L4D2_SetVersusTankFlowPercent(const float tankFlows[2]);
 

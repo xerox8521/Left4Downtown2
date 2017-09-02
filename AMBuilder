@@ -49,6 +49,7 @@ detourFiles = [
 	'detours/get_mission_versus_boss_spawning.cpp', 
     'detours/cthrow_activate_ability.cpp', 
 	'detours/start_melee_swing.cpp',
+	'detours/choose_victim.cpp',
 ]
 
 l4d2sdkFiles = [

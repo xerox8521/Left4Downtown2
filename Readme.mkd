@@ -35,3 +35,7 @@
 * New native: `L4D_ReplaceTank(tank, newtank)` -- call `ZombieManager::ReplaceTank(CTerrorPlayer *,CTerrorPlayer *)`.
 * Fixed GameRules on Sourcemod >= 1.7.
 * Disabled `L4D2_OnSpitSpread` and `L4D2_OnPounceOrLeapStumble` to prevent crashes.
+
+###September 02, 2017 :: 0.6.2###
+* New forward : `L4D2_OnChooseVictim(specialInfeted, &curTarget)` -- called whenever `BossZombiePlayer(CTerrorPlayer *, int, CBaseEntity *)` is invoked. This is called in a think hook from within the game so make sure you don't do to much code in it
+* Made includes compatiable with sourcemods transitional syntax

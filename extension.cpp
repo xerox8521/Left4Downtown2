@@ -84,6 +84,7 @@
 #include "detours/on_stagger.h"
 #include "detours/terror_weapon_hit.h"
 #include "detours/get_mission_info.h"
+#include "detours/choose_victim.h"
 //#include "detours/inferno_spread.h"
 //#include "detours/shoved_by_pounce_landing.h"
 
@@ -139,6 +140,7 @@ IForward *g_pFwdOnTerrorWeaponHit = NULL;
 IForward *g_pFwdAddonsDisabler = NULL;
 IForward *g_pFwdInfernoSpread = NULL;
 IForward *g_pFwdOnShovedByPounceLanding = NULL;
+IForward *g_pFwdOnChooseVictim = NULL;
 
 bool g_bRoundEnd = false;
 
@@ -237,6 +239,7 @@ bool Left4Downtown::SDK_OnLoad(char *error, size_t maxlength, bool late)
 	g_pFwdAddonsDisabler = forwards->CreateForward("L4D2_OnClientDisableAddons", ET_Event, 1, /*types*/NULL, Param_String);
 	g_pFwdInfernoSpread = forwards->CreateForward("L4D2_OnSpitSpread", ET_Event, 5, /*types*/NULL, Param_Cell, Param_Cell, Param_FloatByRef, Param_FloatByRef, Param_FloatByRef);
 	g_pFwdOnShovedByPounceLanding = forwards->CreateForward("L4D2_OnPounceOrLeapStumble", ET_Event, 2, /*types*/NULL, Param_Cell, Param_Cell);
+	g_pFwdOnChooseVictim = forwards->CreateForward("L4D2_OnChooseVictim", ET_Event, 2, /*types*/ NULL, Param_Cell, Param_CellByRef);
 
 	playerhelpers->AddClientListener(&g_Left4DowntownTools);
 	playerhelpers->RegisterCommandTargetProcessor(&g_Left4DowntownTools);
@@ -332,6 +335,7 @@ void Left4Downtown::SDK_OnAllLoaded()
 	g_PatchManager.Register(new AutoPatch<Detours::FastGetSurvivorSet>());
 	g_PatchManager.Register(new AutoPatch<Detours::GetMissionVersusBossSpawning>());
 	g_PatchManager.Register(new AutoPatch<Detours::CThrowActivate>());
+	g_PatchManager.Register(new AutoPatch<Detours::BossZombiePlayerBotChooseVictim>());
 	g_PatchManager.Register(new AutoPatch<Detours::StartMeleeSwing>());
 	g_PatchManager.Register(new AutoPatch<Detours::ReplaceTank>());
 	g_PatchManager.Register(new AutoPatch<Detours::UseHealingItems>());
@@ -414,6 +418,7 @@ void Left4Downtown::SDK_OnUnload()
     forwards->ReleaseForward(g_pFwdAddonsDisabler);
     forwards->ReleaseForward(g_pFwdInfernoSpread);
     forwards->ReleaseForward(g_pFwdOnShovedByPounceLanding);
+	forwards->ReleaseForward(g_pFwdOnChooseVictim);
 }
 
 class BaseAccessor : public IConCommandBaseAccessor
