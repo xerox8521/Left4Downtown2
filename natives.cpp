@@ -1266,7 +1266,7 @@ sp_nativeinfo_t g_L4DoNatives[] =
 	{"L4D2_SpawnWitchBride",  			L4D2_SpawnWitchBride},
 	{"GetClosestSurvivor",				Native_GetClosestSurvivor},
 	{"GetClosestSurvivorEx",			Native_GetClosestSurvivorEx},
-	{"GetLastSurvivor",					Native_LastSurvivor},
+	{"GetLastSurvivor",					Native_GetLastSurvivor},
 	{"GetFirstSurvivor",				Native_GetFirstSurvivor},
 	{"GetRandomSurvivor",				Native_GetRandomSurvivor},
 	{NULL,							NULL}
