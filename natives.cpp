@@ -97,6 +97,68 @@ cell_t L4D_GetTeamScore(IPluginContext *pContext, const cell_t *params)
 	return retbuffer;
 }
 
+cell_t Native_GetClosestSurvivor(IPluginContext *pContext, const cell_t *params)
+{
+	if (g_pDirector == NULL)
+	{
+		return pContext->ThrowNativeError("Director not available");
+	}
+	static ICallWrapper *pWrapper = NULL;
+	if(!pWrapper)
+	{
+		PassInfo retInfo;
+		retInfo.flags = PASSFLAG_BYVAL;
+		retInfo.size = sizeof(CBaseEntity *);
+		retInfo.type = PassType_Basic;
+		
+		REGISTER_NATIVE_ADDR("CDirectorTacticalServices::GetClosestSurvivor",
+		
+			PassInfo pass[3];\
+			pass[0].flags = PASSFLAG_BYVAL;\
+			pass[0].size = sizeof(CBaseEntity *);\
+			pass[0].type = PassType_Basic;\
+			
+			pass[1].flags = PASSFLAG_BYVAL;\
+			pass[1].size = sizeof(bool);\
+			pass[1].type = PassType_Basic;\
+			
+			pass[2].flags = PASSFLAG_BYVAL;\
+			pass[2].size = sizeof(bool);\
+			pass[2].type = PassType_Basic;\
+		
+		pWrapper = g_pBinTools->CreateCall(addr, CallConv_ThisCall, &retInfo, pass, 3));
+	}
+	CDirector *director = *g_pDirector;
+	CBaseEntity *pEntity = NULL;
+	if(!(pEntity = UTIL_GetCBaseEntity(params[1], false)))
+	{
+		return pContext->ThrowNativeError("Entity index %d is invalid",params[1]);
+	}
+	CDirectorTacticalServices *directorTS = director->TacticalServicesPtr;
+	if(!directorTS)
+	{
+		return pContext->ThrowNativeError("Invalid CDirectorTacticalService pointer");
+	}
+	
+	unsigned char vstk[sizeof( void *) + sizeof(CBaseEntity *) + sizeof(bool) + sizeof(bool)];
+	unsigned char *vptr = vstk;
+	*(void **)vptr = directorTS;
+	vptr += sizeof(void *);
+	*(CBaseEntity **)vptr = pEntity;
+	vptr += sizeof(CBaseEntity *);
+	*(bool *)vptr = params[2];
+	vptr += sizeof(bool);
+	*(bool *)vptr = params[3];
+	CBaseEntity* pSurvivor;
+	
+	pWrapper->Execute(vstk,(void*) &pSurvivor );
+	if(!pSurvivor)
+	{
+		return -1;
+	}
+	return gamehelpers->EntityToBCompatRef(pSurvivor);
+}
+
 // native L4D_RestartScenarioFromVote(const String:map[])
 cell_t L4D_RestartScenarioFromVote(IPluginContext *pContext, const cell_t *params)
 {
@@ -987,6 +1049,197 @@ cell_t L4D2_SpawnWitchBride(IPluginContext *pContext, const cell_t *params)
 	return gamehelpers->EntityToBCompatRef( entity );
 }
 
+cell_t Native_GetLastSurvivor(IPluginContext *pContext, const cell_t *params)
+{
+	if (g_pDirector == NULL)
+	{
+		return pContext->ThrowNativeError("Director not available");
+	}
+	static ICallWrapper *pWrapper = NULL;
+	if(!pWrapper)
+	{
+		REGISTER_NATIVE_ADDR("CDirectorTacticalServices::GetLowestFlowSurvivor",
+		PassInfo retInfo;\
+		retInfo.flags = PASSFLAG_BYVAL;\
+		retInfo.size = sizeof(CBaseEntity *);\
+		retInfo.type = PassType_Basic;\
+		
+		pWrapper = g_pBinTools->CreateCall(addr, CallConv_ThisCall, &retInfo, NULL, 0));
+	}
+	CDirector *director = *g_pDirector;
+	CDirectorTacticalServices *directorTS = director->TacticalServicesPtr;
+	if(!directorTS)
+	{
+		return pContext->ThrowNativeError("Invalid CDirectorTacticalService pointer");
+	}
+	unsigned char vstk[sizeof( void *)];
+	unsigned char *vptr = vstk;
+	
+	*(void **)vptr = directorTS;
+	CBaseEntity* pSurvivor;
+	
+	pWrapper->Execute(vstk,(void*) &pSurvivor );
+	
+	if(!pSurvivor)
+	{
+		return -1;
+	}
+	return gamehelpers->EntityToBCompatRef(pSurvivor);
+}
+
+cell_t Native_GetFirstSurvivor(IPluginContext *pContext, const cell_t *params)
+{
+	if (g_pDirector == NULL)
+	{
+		return pContext->ThrowNativeError("Director not available");
+	}
+	static ICallWrapper *pWrapper = NULL;
+	if(!pWrapper)
+	{
+		REGISTER_NATIVE_ADDR("CDirectorTacticalServices::GetHighestFlowSurvivor",
+		PassInfo pass;\
+		pass.flags = PASSFLAG_BYVAL;\
+		pass.size = sizeof(int);\
+		pass.type = PassType_Basic;\
+		
+		PassInfo retInfo;\
+		retInfo.flags = PASSFLAG_BYVAL;\
+		retInfo.size = sizeof(CBaseEntity *);\
+		retInfo.type = PassType_Basic;\
+		
+		pWrapper = g_pBinTools->CreateCall(addr, CallConv_ThisCall, &retInfo, &pass, 1));
+	}
+	CDirector *director = *g_pDirector;
+	CDirectorTacticalServices *directorTS = director->TacticalServicesPtr;
+	if(!directorTS)
+	{
+		return pContext->ThrowNativeError("Invalid CDirectorTacticalService pointer");
+	}
+	unsigned char vstk[sizeof( void *) + sizeof(int)];
+	unsigned char *vptr = vstk;
+	
+	*(void **)vptr = directorTS;
+	vptr += sizeof(void *);
+	
+	*(int *)vptr = params[1];
+	CBaseEntity* pSurvivor;
+	
+	pWrapper->Execute(vstk,(void*) &pSurvivor );
+	
+	if(!pSurvivor)
+	{
+		return -1;
+	}
+	return gamehelpers->EntityToBCompatRef(pSurvivor);
+}
+
+cell_t Native_GetRandomSurvivor(IPluginContext *pContext, const cell_t *params)
+{
+	if (g_pDirector == NULL)
+	{
+		return pContext->ThrowNativeError("Director not available");
+	}
+	static ICallWrapper *pWrapper = NULL;
+	if(!pWrapper)
+	{
+		REGISTER_NATIVE_ADDR("CDirectorTacticalServices::GetRandomSurvivor",
+		
+		PassInfo retInfo;\
+		retInfo.flags = PASSFLAG_BYVAL;\
+		retInfo.size = sizeof(CBaseEntity *);\
+		retInfo.type = PassType_Basic;\
+		
+		pWrapper = g_pBinTools->CreateCall(addr, CallConv_ThisCall, &retInfo, NULL, 0));
+	}
+	CDirector *director = *g_pDirector;
+	CDirectorTacticalServices *directorTS = director->TacticalServicesPtr;
+	if(!directorTS)
+	{
+		return pContext->ThrowNativeError("Invalid CDirectorTacticalService pointer");
+	}
+	unsigned char vstk[sizeof( void *)];
+	unsigned char *vptr = vstk;
+	
+	*(void **)vptr = directorTS;
+	CBaseEntity* pSurvivor;
+	
+	pWrapper->Execute(vstk,(void*) &pSurvivor );
+	
+	if(!pSurvivor)
+	{
+		return -1;
+	}
+	return gamehelpers->EntityToBCompatRef(pSurvivor);	
+}
+
+cell_t Native_GetClosestSurvivorEx(IPluginContext *pContext, const cell_t *params)
+{
+	if (g_pDirector == NULL)
+	{
+		return pContext->ThrowNativeError("Director not available");
+	}
+	static ICallWrapper *pWrapper = NULL;
+	if(!pWrapper)
+	{
+		REGISTER_NATIVE_ADDR("CDirectorTacticalServices::GetClosestSurvivorEx",
+		PassInfo pass[3];\
+		pass[0].flags = PASSFLAG_BYVAL;\
+		pass[0].size = sizeof(Vector *);\
+		pass[0].type = PassType_Basic;\
+		
+		pass[1].flags = PASSFLAG_BYVAL;\
+		pass[1].size = sizeof(bool);\
+		pass[1].type = PassType_Basic;\
+		
+		pass[2].flags = PASSFLAG_BYVAL;\
+		pass[2].size = sizeof(bool);\
+		pass[2].type = PassType_Basic;\
+		
+		PassInfo retInfo;\
+		retInfo.flags = PASSFLAG_BYVAL;\
+		retInfo.size = sizeof(CBaseEntity *);\
+		retInfo.type = PassType_Basic;\
+		
+		pWrapper = g_pBinTools->CreateCall(addr, CallConv_ThisCall, &retInfo, pass, 3));
+	}
+	CDirector *director = *g_pDirector;
+	CDirectorTacticalServices *directorTS = director->TacticalServicesPtr;
+	if(!directorTS)
+	{
+		return pContext->ThrowNativeError("Invalid CDirectorTacticalService pointer");
+	}
+	
+	cell_t* vec_origin;
+	
+	pContext->LocalToPhysAddr(params[1], &vec_origin);
+	Vector vector;
+
+	if(vec_origin != pContext->GetNullRef(SP_NULL_VECTOR))
+	{
+		vector[0] = sp_ctof(vec_origin[0]);
+		vector[1] = sp_ctof(vec_origin[1]);
+		vector[2] = sp_ctof(vec_origin[2]);
+	}
+	
+	unsigned char vstk[sizeof( void *) + sizeof(Vector *) + sizeof(bool) + sizeof(bool)];
+	unsigned char *vptr = vstk;
+	*(void **)vptr = directorTS;
+	vptr += sizeof(void *);
+	*(Vector **)vptr = &vector;
+	vptr += sizeof(Vector *);
+	*(bool *)vptr = params[2];
+	vptr += sizeof(bool);
+	*(bool *)vptr = params[3];
+	CBaseEntity* pSurvivor;
+	
+	pWrapper->Execute(vstk,(void*) &pSurvivor );
+	if(!pSurvivor)
+	{
+		return -1;
+	}
+	return gamehelpers->EntityToBCompatRef(pSurvivor);
+}
+
 sp_nativeinfo_t g_L4DoNatives[] = 
 {
 	{"L4D_GetTeamScore",				L4D_GetTeamScore},
@@ -1011,5 +1264,10 @@ sp_nativeinfo_t g_L4DoNatives[] =
 	{"L4D2_SpawnTank",					L4D2_SpawnTank},
 	{"L4D2_SpawnWitch",					L4D2_SpawnWitch},
 	{"L4D2_SpawnWitchBride",  			L4D2_SpawnWitchBride},
+	{"GetClosestSurvivor",				Native_GetClosestSurvivor},
+	{"GetClosestSurvivorEx",			Native_GetClosestSurvivorEx},
+	{"GetLastSurvivor",					Native_LastSurvivor},
+	{"GetFirstSurvivor",				Native_GetFirstSurvivor},
+	{"GetRandomSurvivor",				Native_GetRandomSurvivor},
 	{NULL,							NULL}
 };
