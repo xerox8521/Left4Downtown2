@@ -48,6 +48,108 @@ cell_t L4D2_GetTankCount(IPluginContext *pContext, const cell_t *params)
 	return director->m_iTankCount;
 }
 
+cell_t L4D2_GetWitchCount(IPluginContext *pContext, const cell_t *params)
+{
+	if (g_pDirector == NULL)
+	{
+		return pContext->ThrowNativeError("Director unsupported or not available; file a bug report");
+	}
+
+	CDirector *director = *g_pDirector;
+
+	if (director == NULL)
+	{
+		return pContext->ThrowNativeError("Director not available before map is loaded");
+	}
+	return director->m_iWitchCount;
+}
+
+cell_t GetAvgSurvivorSpan(IPluginContext *pContext, const cell_t *params)
+{
+	if (g_pDirector == NULL)
+	{
+		return pContext->ThrowNativeError("Director unsupported or not available; file a bug report");
+	}
+
+	CDirector *director = *g_pDirector;
+
+	if (director == NULL)
+	{
+		return pContext->ThrowNativeError("Director not available before map is loaded");
+	}
+	return sp_ftoc(director->m_fAvgSurvivorSpan);
+}
+
+cell_t GetAvgSurvivorSpeed(IPluginContext *pContext, const cell_t *params)
+{
+	if (g_pDirector == NULL)
+	{
+		return pContext->ThrowNativeError("Director unsupported or not available; file a bug report");
+	}
+
+	CDirector *director = *g_pDirector;
+
+	if (director == NULL)
+	{
+		return pContext->ThrowNativeError("Director not available before map is loaded");
+	}
+	return sp_ftoc(director->m_fAvgSurvivorSpeed);
+}
+
+cell_t GetFurthestSurvivorFlow(IPluginContext *pContext, const cell_t *params)
+{
+	if (g_pDirector == NULL)
+	{
+		return pContext->ThrowNativeError("Director unsupported or not available; file a bug report");
+	}
+
+	CDirector *director = *g_pDirector;
+
+	if (director == NULL)
+	{
+		return pContext->ThrowNativeError("Director not available before map is loaded");
+	}
+	return sp_ftoc(director->m_fFurthestSurvivorFlow);
+}
+
+cell_t GetDirectorTempo(IPluginContext *pContext, const cell_t *params)
+{
+	if (g_pDirector == NULL)
+	{
+		return pContext->ThrowNativeError("Director unsupported or not available; file a bug report");
+	}
+
+	CDirector *director = *g_pDirector;
+
+	if (director == NULL)
+	{
+		return pContext->ThrowNativeError("Director not available before map is loaded");
+	}
+	return director->m_iTempoState;
+}
+
+cell_t SetDirectorTempo(IPluginContext *pContext, const cell_t *params)
+{
+	if (g_pDirector == NULL)
+	{
+		return pContext->ThrowNativeError("Director unsupported or not available; file a bug report");
+	}
+	
+	if(params[1] < TEMPO_BUILDUP || params[1] > TEMPO_RELAX)
+	{
+		return pContext->ThrowNativeError("Invalid director tempo specified: %d Min: %d Max: %d",params[1], TEMPO_BUILDUP, TEMPO_RELAX);
+	}
+
+	CDirector *director = *g_pDirector;
+
+	if (director == NULL)
+	{
+		return pContext->ThrowNativeError("Director not available before map is loaded");
+	}
+	director->m_iTempoState = (DirectorTempoState)params[1];
+	return 1;
+}
+
 cell_t L4D2_GetVersusCampaignScores(IPluginContext *pContext, const cell_t *params)
 {
 	if (g_pDirector == NULL)
@@ -139,6 +241,12 @@ cell_t L4D2_SetVersusTankFlowPercent(IPluginContext *pContext, const cell_t *par
 sp_nativeinfo_t  g_L4DoDirectorNatives[] = 
 {
 	{"L4D2_GetTankCount",				L4D2_GetTankCount},
+	{"L4D2_GetWitchCount",				L4D2_GetWitchCount},
+	{"GetAvgSurvivorSpan",				GetAvgSurvivorSpan},
+	{"GetAvgSurvivorSpeed",				GetAvgSurvivorSpeed},
+	{"GetFurthestSurvivorFlow",			GetFurthestSurvivorFlow},
+	{"GetDirectorTempo",				GetDirectorTempo},
+	{"SetDirectorTempo",				SetDirectorTempo},
 	{"L4D2_GetVersusCampaignScores",	L4D2_GetVersusCampaignScores},
 	{"L4D2_SetVersusCampaignScores",	L4D2_SetVersusCampaignScores},
 	{"L4D2_GetVersusTankFlowPercent",	L4D2_GetVersusTankFlowPercent},
